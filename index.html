@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>Generator wizytówek sędziowskich</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+    }
+
+    #options-container {
+        max-width: 1000px;
+        font-size: 30px;
+    }
+    #options-container table {
+        width: 100%;
+        border-collapse: collapse;
+        background-color: rgb(233, 233, 233);
+    }
+    #options-container td {
+        padding: 10px 12px 10px 5px;
+        vertical-align: middle;
+        border: 1px solid #000;
+    }
+
+    select, input {
+      width: 100%;
+      height: 45px;
+      font-size: 28px;
+      background-color: rgb(196, 196, 196);
+      font-weight: bold;
+    }
+
+    button {
+      margin: 20px;
+      width: 400px;
+      height: 80px;
+      font-size: 30px;
+      background-color: rgb(248, 187, 187);
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    #card-container {
+        width: 1000px;
+        max-width: 1000px;
+        height: 1500px;
+        overflow: visible;
+        background-color: #fff;
+    }
+    
+    /* Dodaj media query dla urządzeń mobilnych */
+    @media (max-width: 1000px) {
+        #card-container {
+            transform: scale(0.49);
+            transform-origin: top left;
+        }
+        
+        #options-container {
+            transform: scale(1);
+            transform-origin: top left;
+        }
+    }
+
+    #league-logo, #league-logo2 {
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+
+    .info {
+        display: inline-flex; /* Ustawienie flexbox */
+        justify-content: center; /* Centrowanie w poziomie */
+        align-items: center; /* Centrowanie w pionie */
+    }
+    .info-text {
+      margin-left: 10px;
+      margin-right: 10px;
+      color: #000;
+      font-size: 28px;
+      text-align: center;
+      font-weight: bold;
+      display: inline-flex;
+      vertical-align: middle;
+    }
+    .additional-info {
+      font-size: 20px;
+      color: #7e7d7d;
+      text-align: center;
+      margin-top: 4px;
+      margin-bottom: 20px;
+      font-weight: bold;
+      font-style: italic; /* Pochylenie tekstu */
+
+    }
+  </style>
+</head>
+
+<body>
+    <div id="options-container">
+      <table border="0" cellspacing="0" cellpadding="2">
+        <tr>
+          <td>
+            <label for="ks-select">Wybierz KS:</label>
+          </td> 
+          <td>
+            <select id="ks-select">
+                <option value="KOLEGIUM SĘDZIÓW MZPN<br>KS WARSZAWA">Warszawa</option>
+                <option value="KOLEGIUM SĘDZIÓW LZPN<br>KS ZAMOŚĆ">Zamość</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <label for="logo-select">Wybierz ligę:</label>
+          </td> 
+          <td>
+            <select id="logo-select">
+                <option value="./src/leagues/4_liga.jpg">IV liga</option>
+                <option value="./src/leagues/5_liga.png">V Liga</option>
+                <option value="./src/leagues/clj.jpg">CLJ</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <label for="home-team-select">Gospodarze:</label>
+          </td> 
+          <td>
+            <select id="home-team-select">
+                <option value="">Wybierz gospodarza</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <label for="away-team-select">Goście:</label>
+          </td> 
+          <td>
+            <select id="away-team-select">
+                <option value="">Wybierz gościa</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <label for="date-input">Data:</label>
+          </td> 
+          <td>
+            <input type="date" id="date-input">
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <label for="time-input">Godzina:</label>
+          </td> 
+          <td>
+            <input type="time" id="time-input">
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <label for="stadium-input">Miasto:</label>
+          </td> 
+          <td>
+            <input type="text" id="stadium-input" placeholder="Podaj miasto">
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <label for="SG-input">Sędzia:</label>
+          </td> 
+          <td>
+            <input type="text" id="SG-input" placeholder="Podaj imię i nazwisko">
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <label for="A1-input">Asystent 1:</label>
+          </td> 
+          <td>
+            <input type="text" id="A1-input" placeholder="Podaj imię i nazwisko">
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <label for="A2-input">Asystent 2:</label>
+          </td> 
+          <td>
+            <input type="text" id="A2-input" placeholder="Podaj imię i nazwisko">
+          </td>
+        </table>
+
+        <table>
+          <tr>
+            <td align="center">
+              <button id="capture">Pobierz wizytówkę</button>
+            </td>
+          </tr>
+        </table>
+        
+        
+    </div>  
+    <div id="card-container">
+        <!-- 1000x1500 -->
+        <table width="1000px" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+                <td>
+                    <table id="header" align="center" height="130px" width="1000px" border="0" cellspacing="0" cellpadding="0" bgcolor="#000">
+                        <tr>
+                            <td height="10px"></td>
+                        </tr>
+                        <tr>
+                            <td id="ks-name" width="700px" style="color: #fff; font-family: Arial, sans-serif; font-size: 40px; font-weight: bold; text-align: center;">
+                                KOLEGIUM SĘDZIÓW MZPN<br>
+                                KS WARSZAWA
+                            </td>
+                            <td id="league-logo" width="150px" bgcolor="#fff"></td>
+                            <td width="150px"></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+
+            <tr>
+                <td height="10px" bgcolor="#fff"></td>
+            </tr>
+
+            <tr style="display: inline-flex; justify-content: space-around; width:1000px">
+                <td style="display: inline-flex; align-items: center;">
+                  <img src="./src/static/calendar.png" alt="Calendar" width="50px" height="50px">
+                  <div id="date" class="info-text"></div>
+                </td>
+                <td style="display: inline-flex; align-items: center;">
+                  <img src="./src/static/clock.jpg" alt="Clock" width="50px" height="50px">
+                  <div id="time" class="info-text"></div>
+                </td>
+                <td style="display: inline-flex; align-items: center;">
+                  <img src="./src/static/stadium.png" alt="Stadium" width="50px" height="50px">
+                  <div id="stadium" class="info-text"></div>
+                </td>
+            </tr>
+            <tr>
+                <td height="10px" bgcolor="#fff"></td>
+            </tr>
+
+            <tr>
+                <td height="2px" bgcolor="#000"></td>
+            </tr>
+           
+            <tr>
+                <td height="15px" bgcolor="#fff"></td>
+            </tr>
+
+            <tr style="display: inline-flex; align-items: center;">
+                <td width="450px" height="345px" style="display: flex; flex-direction: column; align-items: center;">
+                  <div id="home-team-logo" style="width: 270px; height: 265px; background-size: contain; background-repeat: no-repeat; background-position: center; margin-bottom: 10px;"></div>
+                  <div height="80px" style="min-height: 75px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                    <div id="home-team-name" class="info-text" style="font-size: 32px;">Gospodarze</div>
+                  </div>
+                  
+                </td>
+                <td width="100px" height="345px" style="display:flex; align-items: center; justify-content: center;">
+                    <div style="font-size: 48px; font-weight: bold; text-align: center;">VS</div>
+                </td>
+                <td width="450px" height="345px" style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+                    <div id="away-team-logo" style="width: 270px; height: 265px; background-size: contain; background-repeat: no-repeat; background-position: center; margin-bottom: 10px;"></div>
+                    <div height="80px" style="min-height: 75px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                    <div id="away-team-name" class="info-text" style="font-size: 32px;">Goście</div>
+                  </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td height="5px" bgcolor="#fff"></td>
+            </tr>
+
+            <tr>
+                <td height="2px" bgcolor="#000"></td>
+            </tr>
+
+            <tr>
+                <td height="8px" bgcolor="#fff"></td>
+            </tr>
+
+            <tr>
+              <td style="text-align: center; font-size: 24px; font-weight: bold; color: #000;">Obsada sędziowska</td>
+            </tr>
+            <tr>
+                <td height="11px" bgcolor="#fff"></td>
+            </tr>
+
+            <tr style="display: inline-flex; justify-content: space-around; width:1000px; height: 117px;">
+              <td style="flex: 1; display: flex; flex-direction: column; align-items: center;">
+                <img src="./src/static/flag.png" alt="Flag" height="50px" style="margin-bottom: 8px;">
+                <div id="A1" class="info-text" style="min-height:32px;"></div>
+                <div class="additional-info">Asystent 1</div>
+              </td>
+              <td style="flex: 1; display: flex; flex-direction: column; align-items: center;">
+                <img src="./src/static/whistle.png" alt="Whistle" height="50px" style="margin-bottom: 8px;">
+                <div id="SG" class="info-text" style="min-height:32px;"></div>
+                <div class="additional-info">Sędzia</div>
+              </td>
+              <td style="flex: 1; display: flex; flex-direction: column; align-items: center;">
+                <img src="./src/static/flag.png" alt="Flag" height="50px" style="margin-bottom: 8px;">
+                <div id="A2" class="info-text" style="min-height:32px;"></div>
+                <div class="additional-info">Asystent 2</div>
+              </td>
+            </tr>
+        </table>
+
+        <table width="1000px" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+                <td height="17px" bgcolor="#fff"></td>
+            </tr>
+            <tr>
+                <td>
+                    <table id="header" align="center" height="130px" width="1000px" border="0" cellspacing="0" cellpadding="0" bgcolor="#000">
+                        <tr>
+                            <td id="ks-name2" width="700px" style="color: #fff; font-family: Arial, sans-serif; font-size: 40px; font-weight: bold; text-align: center;">
+                                KOLEGIUM SĘDZIÓW MZPN<br>
+                                KS WARSZAWA
+                            </td>
+                            <td id="league-logo2" width="150px" bgcolor="#fff"></td>
+                            <td width="150px"></td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+
+            <tr>
+                <td height="10px" bgcolor="#fff"></td>
+            </tr>
+
+            <tr style="display: inline-flex; justify-content: space-around; width:1000px">
+                <td style="display: inline-flex; align-items: center;">
+                  <img src="./src/static/calendar.png" alt="Calendar" width="50px" height="50px">
+                  <div id="date2" class="info-text"></div>
+                </td>
+                <td style="display: inline-flex; align-items: center;">
+                  <img src="./src/static/clock.jpg" alt="Clock" width="50px" height="50px">
+                  <div id="time2" class="info-text"></div>
+                </td>
+                <td style="display: inline-flex; align-items: center;">
+                  <img src="./src/static/stadium.png" alt="Stadium" width="50px" height="50px">
+                  <div id="stadium2" class="info-text"></div>
+                </td>
+            </tr>
+            <tr>
+                <td height="10px" bgcolor="#fff"></td>
+            </tr>
+
+            <tr>
+                <td height="2px" bgcolor="#000"></td>
+            </tr>
+           
+            <tr>
+                <td height="15px" bgcolor="#fff"></td>
+            </tr>
+
+            <tr style="display: inline-flex; align-items: center;">
+                <td width="450px" height="345px" style="display: flex; flex-direction: column; align-items: center;">
+                  <div id="home-team-logo2" style="width: 270px; height: 265px; background-size: contain; background-repeat: no-repeat; background-position: center; margin-bottom: 10px;"></div>
+                  <div height="80px" style="min-height: 75px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                    <div id="home-team-name2" class="info-text" style="font-size: 32px;">Gospodarze</div>
+                  </div>
+                  
+                </td>
+                <td width="100px" height="345px" style="display:flex; align-items: center; justify-content: center;">
+                    <div style="font-size: 48px; font-weight: bold; text-align: center;">VS</div>
+                </td>
+                <td width="450px" height="345px" style="display: flex; flex-direction: column; align-items: center; text-align: center;">
+                    <div id="away-team-logo2" style="width: 270px; height: 265px; background-size: contain; background-repeat: no-repeat; background-position: center; margin-bottom: 10px;"></div>
+                    <div height="80px" style="min-height: 75px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                    <div id="away-team-name2" class="info-text" style="font-size: 32px;">Goście</div>
+                  </div>
+                </td>
+            </tr>
+
+            <tr>
+                <td height="5px" bgcolor="#fff"></td>
+            </tr>
+
+            <tr>
+                <td height="2px" bgcolor="#000"></td>
+            </tr>
+
+            <tr>
+                <td height="8px" bgcolor="#fff"></td>
+            </tr>
+
+            <tr>
+              <td style="text-align: center; font-size: 24px; font-weight: bold; color: #000;">Obsada sędziowska</td>
+            </tr>
+            <tr>
+                <td height="11px" bgcolor="#fff"></td>
+            </tr>
+
+            <tr style="display: inline-flex; justify-content: space-around; width:1000px; height: 117px;">
+              <td style="flex: 1; display: flex; flex-direction: column; align-items: center;">
+                <img src="./src/static/flag.png" alt="Flag" height="50px" style="margin-bottom: 8px;">
+                <div id="A12" class="info-text" style="min-height:32px;"></div>
+                <div class="additional-info">Asystent 1</div>
+              </td>
+              <td style="flex: 1; display: flex; flex-direction: column; align-items: center;">
+                <img src="./src/static/whistle.png" alt="Whistle" height="50px" style="margin-bottom: 8px;">
+                <div id="SG2" class="info-text" style="min-height:32px;"></div>
+                <div class="additional-info">Sędzia</div>
+              </td>
+              <td style="flex: 1; display: flex; flex-direction: column; align-items: center;">
+                <img src="./src/static/flag.png" alt="Flag" height="50px" style="margin-bottom: 8px;">
+                <div id="A22" class="info-text" style="min-height:32px;"></div>
+                <div class="additional-info">Asystent 2</div>
+              </td>
+            </tr>
+        </table>
+    </div>
+  
+
+  
+  <script>
+    // Baza danych klubów
+    const clubsData = {
+        "KOLEGIUM SĘDZIÓW MZPN<br>KS WARSZAWA": {
+            "./src/leagues/4_liga.jpg": [
+                { name: "Legia Warszawa", logo: "./src/clubs/legia.png" },
+                { name: "Polonia Warszawa", logo: "./src/clubs/polonia.png" },
+                { name: "Hutnik Warszawa", logo: "./src/clubs/hutnik.png" }
+            ],
+            "./src/leagues/5_liga.png": [
+                { name: "Okęcie Warszawa", logo: "./src/clubs/okebie.png" },
+                { name: "Praga Warszawa", logo: "./src/clubs/praga.png" }
+            ],
+            "./src/leagues/clj.jpg": [
+                { name: "Akademia Legia", logo: "./src/clubs/akademia_legia.png" },
+                { name: "Młoda Polonia", logo: "./src/clubs/mloda_polonia.png" }
+            ]
+        },
+        "KOLEGIUM SĘDZIÓW LZPN<br>KS ZAMOŚĆ": {
+            "./src/leagues/4_liga.jpg": [
+                { name: "Hetman Zamość", logo: "./src/clubs/hetman_zamosc.jpg" },
+                { name: "Tomasovia Tomaszów Lubelski", logo: "./src/clubs/tomasovia_tomaszow_lubelski.png" }
+            ],
+            "./src/leagues/5_liga.png": [
+                { name: "Victoria Zamość", logo: "./src/clubs/victoria.png" },
+                { name: "Unia Zamość", logo: "./src/clubs/unia.png" }
+            ],
+            "./src/leagues/clj.jpg": [
+                { name: "Akademia Hetman", logo: "./src/clubs/akademia_hetman.png" }
+            ]
+        }
+    };
+
+    // Funkcja do aktualizacji listy klubów
+    function updateClubsList() {
+        const selectedKS = document.getElementById('ks-select').value;
+        const selectedLeague = document.getElementById('logo-select').value;
+        const homeSelect = document.getElementById('home-team-select');
+        const awaySelect = document.getElementById('away-team-select');
+
+        // Wyczyść listy
+        homeSelect.innerHTML = '<option value="">Wybierz gospodarza</option>';
+        awaySelect.innerHTML = '<option value="">Wybierz gościa</option>';
+
+        // Pobierz kluby dla wybranego KS i ligi
+        const clubs = clubsData[selectedKS]?.[selectedLeague] || [];
+
+        // Dodaj kluby do list
+        clubs.forEach(club => {
+            const homeOption = new Option(club.name, JSON.stringify(club));
+            const awayOption = new Option(club.name, JSON.stringify(club));
+            homeSelect.add(homeOption);
+            awaySelect.add(awayOption);
+        });
+    }
+
+    // Obsługa zmiany KS
+    document.getElementById('ks-select').addEventListener('change', (event) => {
+      const selectedKS = event.target.value;
+      const ksName = document.getElementById('ks-name');
+      ksName.innerHTML = selectedKS.replace('<br>', '<br>');
+      const ksName2 = document.getElementById('ks-name2');
+      ksName2.innerHTML = selectedKS.replace('<br>', '<br>');
+      updateClubsList();
+    });
+
+    // Ustawienie domyślnego logo podczas ładowania strony
+    window.addEventListener('DOMContentLoaded', () => {
+      const defaultLogo = document.getElementById('logo-select').value;
+      const leagueLogo = document.getElementById('league-logo');
+      leagueLogo.style.backgroundImage = `url(${defaultLogo})`;
+      const leagueLogo2 = document.getElementById('league-logo2');
+      leagueLogo2.style.backgroundImage = `url(${defaultLogo})`;
+      updateClubsList();
+    });
+
+     // Obsługa zmiany logo
+    document.getElementById('logo-select').addEventListener('change', (event) => {
+      const logo = event.target.value;
+      const leagueLogo = document.getElementById('league-logo');
+      if (logo) {
+        leagueLogo.style.backgroundImage = `url(${logo})`;
+      } else {
+        leagueLogo.style.backgroundImage = 'none';
+      }
+      const leagueLogo2 = document.getElementById('league-logo2');
+      if (logo) {
+        leagueLogo2.style.backgroundImage = `url(${logo})`;
+      } else {
+        leagueLogo2.style.backgroundImage = 'none';
+      }
+      updateClubsList();
+    });
+
+    // Obsługa wyboru gospodarza
+    document.getElementById('home-team-select').addEventListener('change', (event) => {
+        const selectedValue = event.target.value;
+        if (selectedValue) {
+            const club = JSON.parse(selectedValue);
+            document.getElementById('home-team-logo').style.backgroundImage = `url(${club.logo})`;
+            document.getElementById('home-team-name').textContent = club.name;
+            document.getElementById('home-team-logo2').style.backgroundImage = `url(${club.logo})`;
+            document.getElementById('home-team-name2').textContent = club.name;
+        } else {
+            document.getElementById('home-team-logo').style.backgroundImage = 'none';
+            document.getElementById('home-team-name').textContent = 'Gospodarze';
+            document.getElementById('home-team-logo2').style.backgroundImage = 'none';
+            document.getElementById('home-team-name2').textContent = 'Gospodarze';
+        }
+    });
+
+    // Obsługa wyboru gości
+    document.getElementById('away-team-select').addEventListener('change', (event) => {
+        const selectedValue = event.target.value;
+        if (selectedValue) {
+            const club = JSON.parse(selectedValue);
+            document.getElementById('away-team-logo').style.backgroundImage = `url(${club.logo})`;
+            document.getElementById('away-team-name').textContent = club.name;
+            document.getElementById('away-team-logo2').style.backgroundImage = `url(${club.logo})`;
+            document.getElementById('away-team-name2').textContent = club.name;
+        } else {
+            document.getElementById('away-team-logo').style.backgroundImage = 'none';
+            document.getElementById('away-team-name').textContent = 'Goście';
+            document.getElementById('away-team-logo2').style.backgroundImage = 'none';
+            document.getElementById('away-team-name2').textContent = 'Goście';
+        }
+    });
+
+    // Obsługa zmiany daty
+    document.getElementById('date-input').addEventListener('change', (event) => {
+        const selectedDate = event.target.value;
+        const dateElement = document.getElementById('date');
+        dateElement.textContent = selectedDate.split('-').reverse().join('.');
+        const dateElement2 = document.getElementById('date2');
+        dateElement2.textContent = selectedDate.split('-').reverse().join('.');
+    });
+
+    // Obsługa zmiany czasu
+    document.getElementById('time-input').addEventListener('change', (event) => {
+        const selectedTime = event.target.value;
+        const timeElement = document.getElementById('time');
+        timeElement.textContent = selectedTime;
+        const timeElement2 = document.getElementById('time2');
+        timeElement2.textContent = selectedTime;
+    });
+
+    // Obsługa zmiany stadionu
+    document.getElementById('stadium-input').addEventListener('input', (event) => {
+        const selectedStadium = event.target.value;
+        const stadiumElement = document.getElementById('stadium');
+        stadiumElement.textContent = selectedStadium;
+        const stadiumElement2 = document.getElementById('stadium2');
+        stadiumElement2.textContent = selectedStadium;
+    });
+
+    document.getElementById('SG-input').addEventListener('input', (event) => {
+        const selectedSG = event.target.value;
+        const SGElement = document.getElementById('SG');
+        SGElement.textContent = selectedSG;
+        const SGElement2 = document.getElementById('SG2');
+        SGElement2.textContent = selectedSG;
+    });
+    document.getElementById('A1-input').addEventListener('input', (event) => {
+        const selectedA1 = event.target.value;
+        const A1Element = document.getElementById('A1');
+        A1Element.textContent = selectedA1;
+        const A1Element2 = document.getElementById('A12');
+        A1Element2.textContent = selectedA1;
+    });
+    document.getElementById('A2-input').addEventListener('input', (event) => {
+        const selectedA2 = event.target.value;
+        const A2Element = document.getElementById('A2');
+        A2Element.textContent = selectedA2;
+        const A2Element2 = document.getElementById('A22');
+        A2Element2.textContent = selectedA2;
+    });
+
+    // Obsługa przycisku pobierania wizytówki
+    document.getElementById('capture').addEventListener('click', () => {
+      const card = document.getElementById('card-container');
+
+      const options = {
+            backgroundColor: null,
+            // width: 1000,
+            // height: 1500,
+            // scale: 1,
+            // useCORS: true,
+            // allowTaint: true,
+            // foreignObjectRendering: true,
+            // scrollX: 0,
+            // scrollY: 0,
+            // windowWidth: 1000,
+            // windowHeight: 1500
+        };
+
+      html2canvas(card, options).then(canvas => {
+        const link = document.createElement('a');
+        link.download = 'wizytowka.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+      });
+    });
+  </script>
+</body>
+</html>
