@@ -413,8 +413,10 @@
       align-items: center;
       justify-content: center;
       overflow: hidden;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: contain;
     }
-    .crest img { width: 100%; height: 100%; object-fit: contain; }
     .crest.empty {
       background: repeating-linear-gradient(135deg, rgba(20,22,26,.07) 0 8px, rgba(20,22,26,.02) 8px 16px);
       font-family: 'JetBrains Mono', monospace;
@@ -430,11 +432,22 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background: #fff;
+      background-color: #fff;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: contain;
       overflow: hidden;
       border-radius: 8px;
     }
-    .llogo img { width: 100%; height: 100%; object-fit: contain; }
+
+    /* ikony szablonu klasycznego — również jako tło, nie <img> */
+    .ico {
+      flex: none;
+      display: block;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: contain;
+    }
 
     /* ---------- SZABLON A: Night broadcast ---------- */
     .t-a { background: #0e1014; color: #fff; }
@@ -591,7 +604,7 @@
     .t-d .head .llogo { width: 118px; height: 96px; }
     .t-d .strip { display: flex; align-items: center; padding: 14px 40px; flex: none; }
     .t-d .strip > div { flex: 1; display: flex; align-items: center; justify-content: center; gap: 10px; min-width: 0; }
-    .t-d .strip img { width: 48px; height: 48px; object-fit: contain; flex: none; }
+    .t-d .strip .ico { width: 50px; height: 48px; }
     .t-d .strip span { font-weight: bold; font-size: 37px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
     .t-d .rule { height: 3px; background: #000; margin: 0 46px; flex: none; }
     .t-d .teams { flex: 1; display: flex; align-items: center; padding: 12px 40px; }
@@ -603,7 +616,7 @@
     .t-d .crew .cap { text-align: center; font-weight: bold; font-size: 30px; margin-bottom: 6px; }
     .t-d .crew .row { display: flex; align-items: flex-start; }
     .t-d .crew .box { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; min-width: 0; }
-    .t-d .crew .box img { height: 48px; object-fit: contain; }
+    .t-d .crew .box .ico { width: 54px; height: 48px; }
     .t-d .crew .box .v { width: 100%; overflow: hidden; font-weight: bold; font-size: 35px; text-align: center; line-height: 1.04; min-height: 36px; }
     .t-d .crew .box .l { font-size: 27px; font-style: italic; font-weight: bold; color: #6d6c6c; }
   </style>
@@ -858,14 +871,14 @@
 
     function crest(logo, cls, placeholder) {
       if (logo) {
-        return '<div class="crest ' + cls + '"><img src="' + esc(logo) + '" alt=""></div>';
+        return '<div class="crest ' + cls + '" style="background-image:url(\'' + esc(logo) + '\')"></div>';
       }
       return '<div class="crest ' + cls + ' empty">' + (placeholder || 'HERB') + '</div>';
     }
 
     function llogo(logo) {
       return logo
-        ? '<div class="llogo"><img src="' + esc(logo) + '" alt=""></div>'
+        ? '<div class="llogo" style="background-image:url(\'' + esc(logo) + '\')"></div>'
         : '<div class="llogo" style="background:rgba(255,255,255,.08)"></div>';
     }
 
@@ -999,9 +1012,9 @@
             llogo(d.leagueLogo) +
           '</div>' +
           '<div class="strip">' +
-            '<div><img src="./src/static/calendar.png" alt=""><span class="fitline" data-min="20">' + esc(d.date) + '</span></div>' +
-            '<div><img src="./src/static/clock.jpg" alt=""><span class="fitline" data-min="20">' + esc(d.time) + '</span></div>' +
-            '<div><img src="./src/static/stadium.png" alt=""><span class="fitline" data-min="20">' + esc(d.city) + '</span></div>' +
+            '<div><i class="ico" style="background-image:url(\'./src/static/calendar.png\')"></i><span class="fitline" data-min="20">' + esc(d.date) + '</span></div>' +
+            '<div><i class="ico" style="background-image:url(\'./src/static/clock.jpg\')"></i><span class="fitline" data-min="20">' + esc(d.time) + '</span></div>' +
+            '<div><i class="ico" style="background-image:url(\'./src/static/stadium.png\')"></i><span class="fitline" data-min="20">' + esc(d.city) + '</span></div>' +
           '</div>' +
           '<div class="rule"></div>' +
           '<div class="teams">' +
@@ -1015,9 +1028,9 @@
           '<div class="crew">' +
             '<div class="cap">Obsada sędziowska</div>' +
             '<div class="row">' +
-              '<div class="box"><img src="./src/static/flag.png" alt=""><div class="v fitline" data-min="19">' + esc(d.a1) + '</div><div class="l">Asystent 1</div></div>' +
-              '<div class="box"><img src="./src/static/whistle.png" alt=""><div class="v fitline" data-min="19">' + esc(d.ref) + '</div><div class="l">Sędzia</div></div>' +
-              '<div class="box"><img src="./src/static/flag.png" alt=""><div class="v fitline" data-min="19">' + esc(d.a2) + '</div><div class="l">Asystent 2</div></div>' +
+              '<div class="box"><i class="ico" style="background-image:url(\'./src/static/flag.png\')"></i><div class="v fitline" data-min="19">' + esc(d.a1) + '</div><div class="l">Asystent 1</div></div>' +
+              '<div class="box"><i class="ico" style="background-image:url(\'./src/static/whistle.png\')"></i><div class="v fitline" data-min="19">' + esc(d.ref) + '</div><div class="l">Sędzia</div></div>' +
+              '<div class="box"><i class="ico" style="background-image:url(\'./src/static/flag.png\')"></i><div class="v fitline" data-min="19">' + esc(d.a2) + '</div><div class="l">Asystent 2</div></div>' +
             '</div>' +
           '</div>' +
         '</div>';
